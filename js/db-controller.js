@@ -43,7 +43,7 @@ const dbInsertFavourite = (fav) => {
     idbPromised
       .then(db => {
         const transaction = db.transaction("favs", `readwrite`);
-        transaction.objectStore("favs").add(fav);
+        transaction.objectStore("favs").put(fav);
         return transaction;
       })
       .then(transaction => {

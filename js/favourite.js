@@ -9,13 +9,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 <img src="${fav.teamImage}" class="img-responsive circle mr-2" width="50px" height="50px"> ${fav.teamName}
               </td>
               <td class="center">
-                <button class="waves-effect waves-light btn"><a class="white-text" href="detail.html?id=${fav.teamId}"><i class="material-icons">remove_red_eye</i></a></button>
-                <button id="${fav.favId}" class="waves-effect waves-light btn pink removeButton"><i class="material-icons">clear</i></button>
+              <a class="white-text" href="detail.html?id=${fav.teamId}"><button class="waves-effect waves-light btn"><i class="material-icons">remove_red_eye</i></button></a>
+                <button id="${fav.favId}" class="waves-effect waves-light btn pink removeButton"><i class="material-icons" id="${fav.favId}">clear</i></button>
               </td>
             </tr>
             `;
       });
-      document.getElementById('teams').innerHTML = listFavouritesInText;
+      document.getElementById("teams").innerHTML = listFavouritesInText;
 
       let removeButtons = document.querySelectorAll(".removeButton");
       for (let button of removeButtons) {

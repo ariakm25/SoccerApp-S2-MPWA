@@ -1,6 +1,6 @@
-var base_url = "https://api.football-data.org/v2/";
-var id_liga = "2001";
-var headers = {
+const base_url = "https://api.football-data.org/v2/";
+const id_liga = "2001";
+const headers = {
   "X-Auth-Token": "a91ef88a9f764bc2a4285057d81a5b9b"
 };
 
@@ -116,80 +116,7 @@ function getTeamById() {
       if (response) {
         response.json().then(function(data) {
           if (data != null) {
-            var TeamHTML = `
-          <input type="hidden" id="id-team" value="${data.id}">
-          <div class="card mt-2 p2">
-            <div class="row">
-              <div class="col s12 m4 center">
-                <img src="${data.crestUrl.replace(
-                  /^http:\/\//i,
-                  "https://"
-                )}" class="responsive-img"/>
-                <button onclick="insertFav(${data.id}, '${data.name}', '${
-              data.crestUrl
-            }')" class="waves-effect waves-light btn mt-1 mb-2" id="favButton"><i class="material-icons left">favorite_border</i>Favorit</button>
-              </div>
-              <div class="col s12 m8">
-                <table>
-                  <tbody>
-                    <tr>
-                      <th>Nama Tim</th>
-                      <td>${data.name}</td>
-                    </tr>
-                    <tr>
-                      <th>Nama Singkat</th>
-                      <td>${data.shortName ? data.shortName : "-"}</td>
-                    </tr>
-                    <tr>
-                      <th>Stadion</th>
-                      <td>${data.venue ? data.venue : "-"}</td>
-                    </tr>
-                    <tr>
-                      <th>Website</th>
-                      <td>${data.website ? data.website : "-"}</td>
-                    </tr>
-                    <tr>
-                      <th>Email</th>
-                      <td>${data.email ? data.email : "-"}</td>
-                    </tr>
-                    <tr>
-                      <th>Negara</th>
-                      <td>${data.area.name ? data.area.name : "-"}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div class="card-content">
-              <span class="card-title">Daftar Squad</span>
-              <table class="responsive-table striped">
-                <thead>
-                  <tr>
-                      <th>Nama</th>
-                      <th>Posisi</th>
-                      <th>Nomor</th>
-                      <th>Negara</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                ${data.squad
-                  .map((squad, i) => {
-                    return `
-                  <tr>
-                    <td>${squad.name ? squad.name : "-"}</td>
-                    <td>${squad.position ? squad.position : "-"}</td>
-                    <td>${squad.shirtNumber ? squad.shirtNumber : "-"}</td>
-                    <td>${squad.nationality ? squad.nationality : "-"}</td>
-                  </tr>
-                  `;
-                  })
-                  .join("")}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        `;
+            var TeamHTML = teamHTML(data);
           }
           // Sisipkan komponen card ke dalam elemen dengan id #content
           document.getElementById("body-content").innerHTML = TeamHTML;
@@ -218,79 +145,7 @@ function getTeamById() {
       // Objek JavaScript dari response.json() masuk lewat variabel data.
       console.log(data);
       // Menyusun komponen card artikel secara dinamis
-      var TeamHTML = `
-      <div class="card mt-2 p2">
-        <div class="row">
-          <div class="col s12 m4 center">
-            <img src="${data.crestUrl.replace(
-              /^http:\/\//i,
-              "https://"
-            )}" class="responsive-img"/>
-            <button onclick="insertFav(${data.id}, '${data.name}', '${
-        data.crestUrl
-      }')" class="waves-effect waves-light btn mt-1 mb-2" id="favButton"><i class="material-icons left">favorite_border</i>Favorit</button>
-          </div>
-          <div class="col s12 m8">
-            <table>
-              <tbody>
-                <tr>
-                  <th>Nama Tim</th>
-                  <td>${data.name}</td>
-                </tr>
-                <tr>
-                  <th>Nama Singkat</th>
-                  <td>${data.shortName ? data.shortName : "-"}</td>
-                </tr>
-                <tr>
-                  <th>Stadion</th>
-                  <td>${data.venue ? data.venue : "-"}</td>
-                </tr>
-                <tr>
-                  <th>Website</th>
-                  <td>${data.website ? data.website : "-"}</td>
-                </tr>
-                <tr>
-                  <th>Email</th>
-                  <td>${data.email ? data.email : "-"}</td>
-                </tr>
-                <tr>
-                  <th>Negara</th>
-                  <td>${data.area.name ? data.area.name : "-"}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="card-content">
-          <span class="card-title">Daftar Squad</span>
-          <table class="responsive-table striped">
-            <thead>
-              <tr>
-                  <th>Nama</th>
-                  <th>Posisi</th>
-                  <th>Nomor</th>
-                  <th>Negara</th>
-              </tr>
-            </thead>
-
-            <tbody>
-            ${data.squad
-              .map((squad, i) => {
-                return `
-              <tr>
-                <td>${squad.name ? squad.name : "-"}</td>
-                <td>${squad.position ? squad.position : "-"}</td>
-                <td>${squad.shirtNumber ? squad.shirtNumber : "-"}</td>
-                <td>${squad.nationality ? squad.nationality : "-"}</td>
-              </tr>
-              `;
-              })
-              .join("")}
-            </tbody>
-          </table>
-        </div>
-      </div>
-        `;
+      var TeamHTML = teamHTML(data);
       // Sisipkan komponen card ke dalam elemen dengan id #content
       document.getElementById("body-content").innerHTML = TeamHTML;
       dbGetFavourite(data.id)
@@ -317,8 +172,84 @@ function insertFav(id, name, image) {
 
   dbInsertFavourite(team).then(() => {
     console.log("Data Inserted");
+    M.toast({html: 'Ditambahkan ke favorit!', classes: 'rounded'});
     let favB = document.getElementById("favButton");
     favB.innerHTML = '<i class="material-icons left">favorite</i> Added';
     favB.classList.add("pink");
   });
+}
+
+function teamHTML(data) {
+  return `<input type="hidden" id="id-team" value="${data.id}">
+  <div class="card mt-2 p2">
+    <div class="row">
+      <div class="col s12 m4 center">
+        <img src="${data.crestUrl.replace(
+          /^http:\/\//i,
+          "https://"
+        )}" class="responsive-img"/>
+        <button onclick="insertFav(${data.id}, '${data.name}', '${
+    data.crestUrl
+  }')" class="waves-effect waves-light btn mt-1 mb-2" id="favButton"><i class="material-icons left">favorite_border</i>Favorit</button>
+      </div>
+      <div class="col s12 m8">
+        <table>
+          <tbody>
+            <tr>
+              <th>Nama Tim</th>
+              <td>${data.name}</td>
+            </tr>
+            <tr>
+              <th>Nama Singkat</th>
+              <td>${data.shortName ? data.shortName : "-"}</td>
+            </tr>
+            <tr>
+              <th>Stadion</th>
+              <td>${data.venue ? data.venue : "-"}</td>
+            </tr>
+            <tr>
+              <th>Website</th>
+              <td>${data.website ? data.website : "-"}</td>
+            </tr>
+            <tr>
+              <th>Email</th>
+              <td>${data.email ? data.email : "-"}</td>
+            </tr>
+            <tr>
+              <th>Negara</th>
+              <td>${data.area.name ? data.area.name : "-"}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-content">
+      <span class="card-title">Daftar Squad</span>
+      <table class="responsive-table striped">
+        <thead>
+          <tr>
+              <th>Nama</th>
+              <th>Posisi</th>
+              <th>Nomor</th>
+              <th>Negara</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        ${data.squad
+          .map((squad, i) => {
+            return `
+          <tr>
+            <td>${squad.name ? squad.name : "-"}</td>
+            <td>${squad.position ? squad.position : "-"}</td>
+            <td>${squad.shirtNumber ? squad.shirtNumber : "-"}</td>
+            <td>${squad.nationality ? squad.nationality : "-"}</td>
+          </tr>
+          `;
+          })
+          .join("")}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
 }
